@@ -1,3 +1,4 @@
+.infisical.json
 temp*.js
 *.key
 env/
