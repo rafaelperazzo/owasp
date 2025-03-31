@@ -1,2 +1,7 @@
-# owasp
-Desenvolvimento Seguro
+# Desenvolvimento Seguro
+
+## Criptografia
+
+## Gerenciamento de segredos
+
+## Logs
