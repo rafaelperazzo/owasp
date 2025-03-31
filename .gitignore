@@ -1,3 +1,6 @@
+temp*.js
+*.key
+env/
 # Logs
 logs
 *.log

@@ -10,17 +10,38 @@ production without proper security measures.
 
 Author: RAFAEL PERAZZO B MOTA
 Date: 2025-03-30
-Version: 1.0
+Version: 1.1
 '''
 # -*- coding: utf-8 -*-
 from pathlib import Path
 import argon2
 from argon2 import PasswordHasher
 from Crypto.Cipher import AES
-from Crypto.Hash import HMAC, SHA3_512
+from Crypto.Hash import HMAC, SHA3_256
 from Crypto.Random import get_random_bytes
 from Crypto.Util.Padding import pad, unpad
 
+def hexstring_to_bytes(hex_string):
+    '''
+    Converts a hexadecimal string to bytes.
+    :param hex_string: hexadecimal string to be converted
+    :return: bytes
+    '''
+    # Remove any leading '0x' and convert to bytes
+    hex_string = hex_string.lstrip('0x')
+    return bytes.fromhex(hex_string)
+
+def bytes_to_hexstring(byte_string):
+    '''
+    Converts bytes to a hexadecimal string.
+    :param byte_string: bytes to be converted
+    :return: hexadecimal string
+    '''
+    # Convert bytes to hexadecimal string
+    hex_string = byte_string.hex()
+    # Add '0x' prefix
+    hex_string = '0x' + hex_string
+    return hex_string
 
 def generate_key():
     '''
@@ -43,11 +64,14 @@ def generate_key():
 
 def encrypt(key, plaintext):
     '''
-    Encrypts the plaintext using AES encryption with a random IV.
+    Encrypts the plaintext using AES CBC encryption with a random IV.
     :param key: AES key (must be 16, 24, or 32 bytes long)
     :param plaintext: plaintext to be encrypted
     :return: ciphertext (IV + ciphertext)
     '''
+    if isinstance(key, str):
+        # Convert hexadecimal string key to bytes
+        key = hexstring_to_bytes(key)
     cipher = AES.new(key, AES.MODE_CBC)
     ciphertext = cipher.encrypt(pad(plaintext, AES.block_size))
     return cipher.iv + ciphertext
@@ -59,20 +83,58 @@ def decrypt(key, ciphertext):
     :param ciphertext: ciphertext to be decrypted (IV + ciphertext)
     :return: decrypted plaintext
     '''
+    if isinstance(key, str):
+        # Convert hexadecimal string key to bytes
+        key = hexstring_to_bytes(key)
     iv = ciphertext[:AES.block_size]
     cipher = AES.new(key, AES.MODE_CBC, iv)
     plaintext = unpad(cipher.decrypt(ciphertext[AES.block_size:]), AES.block_size)
     return plaintext
 
+def aes_gcm_encrypt(key, plaintext):
+    '''
+    Encrypts the plaintext using AES GCM encryption with a random nonce.
+    :param key: AES key (must be 16, 24, or 32 bytes long)
+    :param plaintext: plaintext to be encrypted
+    :return: ciphertext (nonce + ciphertext + tag)
+    '''
+    if isinstance(key, str):
+        # Convert hexadecimal string key to bytes
+        key = hexstring_to_bytes(key)
+    cipher = AES.new(key, AES.MODE_GCM)
+    nonce = cipher.nonce
+    ciphertext, tag = cipher.encrypt_and_digest(plaintext)
+    return nonce + ciphertext + tag
+
+def aes_gcm_decrypt(key, ciphertext):
+    '''
+    Decrypts the ciphertext using AES GCM decryption.
+    :param key: AES key (must be 16, 24, or 32 bytes long)
+    :param ciphertext: ciphertext to be decrypted (nonce + ciphertext + tag)
+    :return: decrypted plaintext
+    '''
+    if isinstance(key, str):
+        # Convert hexadecimal string key to bytes
+        key = hexstring_to_bytes(key)
+    nonce = ciphertext[:16]
+    tag = ciphertext[-16:]
+    ciphertext = ciphertext[16:-16]
+    cipher = AES.new(key, AES.MODE_GCM, nonce=nonce)
+    plaintext = cipher.decrypt_and_verify(ciphertext, tag)
+    return plaintext
+
 def hmac(key, message):
     '''
-    Applies HMAC to the message using SHA3-512.
+    Applies HMAC to the message using SHA3-256.
     :param key: key for the HMAC
     :param message: message to be hashed
     :return: HMAC signature
     '''
+    if isinstance(key, str):
+        # Convert hexadecimal string key to bytes
+        key = hexstring_to_bytes(key)
     # Create the HMAC
-    h = HMAC.new(key, digestmod=SHA3_512)
+    h = HMAC.new(key, digestmod=SHA3_256)
     h.update(message.encode())
     # Convert to hexadecimal
     signature = h.hexdigest()
@@ -86,8 +148,11 @@ def verify_hmac(key, message, signature):
     :param signature: HMAC signature to be verified
     :return: True if the signature is valid, False otherwise
     '''
+    if isinstance(key, str):
+        # Convert hexadecimal string key to bytes
+        key = hexstring_to_bytes(key)
     # Create the HMAC
-    h = HMAC.new(key, digestmod=SHA3_512)
+    h = HMAC.new(key, digestmod=SHA3_256)
     h.update(message.encode())
     # Convert to hexadecimal
     signature_calculated = h.hexdigest()
@@ -104,8 +169,11 @@ def hash_argon2id(key, password):
     :param password: password to be hashed
     :return: Argon2 hash
     '''
+    if isinstance(key, str):
+        # Convert hexadecimal string key to bytes
+        key = hexstring_to_bytes(key)
     # Create the HMAC
-    h = HMAC.new(key,digestmod=SHA3_512)
+    h = HMAC.new(key,digestmod=SHA3_256)
     h.update(password.encode())
     # Convert to hexadecimal
     signature = h.hexdigest()
@@ -123,8 +191,11 @@ def verify_hash(hash_argon, key, password):
     :param password: password to be verified
     :return: True if the password is correct, False otherwise
     '''
+    if isinstance(key, str):
+        # Convert hexadecimal string key to bytes
+        key = hexstring_to_bytes(key)
     # Create the HMAC
-    h = HMAC.new(key,digestmod=SHA3_512)
+    h = HMAC.new(key,digestmod=SHA3_256)
     h.update(password.encode())
     # Convert to hexadecimal
     signature = h.hexdigest()
@@ -137,7 +208,10 @@ def verify_hash(hash_argon, key, password):
     except argon2.exceptions.VerifyMismatchError:
         return False
 
-if __name__ == "__main__":
+def main():
+    '''
+    Função principal para testes das funções de criptografia e hashing.
+    '''
     # Generate or load the AES key
     aes_key = generate_key()
     print(f"AES Key: {aes_key.hex()}")
@@ -161,3 +235,6 @@ if __name__ == "__main__":
     # Verify a different password
     is_valid = verify_hash(HASH_ARGON, aes_key, "wrongpassword")
     print(f"Password is valid: {is_valid}")
+    
+if __name__ == "__main__":
+    main()
