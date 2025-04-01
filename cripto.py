@@ -114,8 +114,8 @@ def aes_gcm_decrypt(key, ciphertext):
     '''
     Decrypts the ciphertext using AES GCM decryption.
     :param key: AES key (must be 16, 24, or 32 bytes long) - bytes or hexadecimal string
-    :param ciphertext: ciphertext to be decrypted (nonce + ciphertext + tag)
-    :return: decrypted plaintext
+    :param ciphertext: ciphertext to be decrypted (nonce + ciphertext + tag) - bytes or base64 string
+    :return: decrypted plaintext - bytes
     '''
     if isinstance(key, str):
         # Convert base64 string key to bytes
