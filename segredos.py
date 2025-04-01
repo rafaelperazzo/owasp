@@ -14,9 +14,9 @@ Executar com o seguinte comando:
     infisical run -- python segredos.py
 '''
 
-TEXTO = b"Texto a ser criptografado"
+TEXTO = "Texto a ser criptografado"
 
 enc = aes_gcm_encrypt(key, TEXTO)
-print(base64.b64encode(enc).decode())
+print(enc)
 dec = aes_gcm_decrypt(key, enc)
-print(dec.decode())
+print(dec)

@@ -79,7 +79,7 @@ def encrypt(key, plaintext):
 
 def decrypt(key, ciphertext):
     '''
-    Decrypts the ciphertext using AES decryption.
+    Decrypts the ciphertext using AES-CBC decryption.
     :param key: AES key (must be 16, 24, or 32 bytes long)
     :param ciphertext: ciphertext to be decrypted (IV + ciphertext)
     :return: decrypted plaintext
@@ -97,7 +97,7 @@ def aes_gcm_encrypt(key, plaintext):
     Encrypts the plaintext using AES GCM encryption with a random nonce.
     :param key: AES key (must be 16, 24, or 32 bytes long) -  bytes or hexadecimal string
     :param plaintext: plaintext to be encrypted - string or bytes
-    :return: ciphertext (nonce + ciphertext + tag) - bytes
+    :return: ciphertext (nonce + ciphertext + tag) - base64 string
     '''
     if isinstance(key, str):
         # Convert hexadecimal string key to bytes
@@ -108,14 +108,14 @@ def aes_gcm_encrypt(key, plaintext):
     cipher = AES.new(key, AES.MODE_GCM)
     nonce = cipher.nonce
     ciphertext, tag = cipher.encrypt_and_digest(plaintext)
-    return nonce + ciphertext + tag
+    return base64.b64encode((nonce + ciphertext + tag)).decode('utf-8')
 
 def aes_gcm_decrypt(key, ciphertext):
     '''
     Decrypts the ciphertext using AES GCM decryption.
     :param key: AES key (must be 16, 24, or 32 bytes long) - bytes or hexadecimal string
     :param ciphertext: ciphertext to be decrypted (nonce + ciphertext + tag) - bytes or base64 string
-    :return: decrypted plaintext - bytes
+    :return: decrypted plaintext - string
     '''
     if isinstance(key, str):
         # Convert base64 string key to bytes
@@ -128,7 +128,7 @@ def aes_gcm_decrypt(key, ciphertext):
     ciphertext = ciphertext[16:-16]
     cipher = AES.new(key, AES.MODE_GCM, nonce=nonce)
     plaintext = cipher.decrypt_and_verify(ciphertext, tag)
-    return plaintext
+    return plaintext.decode('utf-8')
 
 def hmac(key, message):
     '''
