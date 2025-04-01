@@ -9,6 +9,11 @@ except KeyError:
     print("A chave criptografada não foi encontrada. Defina a variável de ambiente 'AES_KEY' com a chave AES em formato hexadecimal.")
     exit(1)
 
+'''
+Executar com o seguinte comando:
+    infisical run -- python segredos.py
+'''
+
 TEXTO = b"Texto a ser criptografado"
 
 enc = aes_gcm_encrypt(key, TEXTO)
