@@ -20,6 +20,7 @@ from Crypto.Cipher import AES
 from Crypto.Hash import HMAC, SHA3_256
 from Crypto.Random import get_random_bytes
 from Crypto.Util.Padding import pad, unpad
+import base64
 
 def hexstring_to_bytes(hex_string):
     '''
@@ -94,13 +95,16 @@ def decrypt(key, ciphertext):
 def aes_gcm_encrypt(key, plaintext):
     '''
     Encrypts the plaintext using AES GCM encryption with a random nonce.
-    :param key: AES key (must be 16, 24, or 32 bytes long)
-    :param plaintext: plaintext to be encrypted
-    :return: ciphertext (nonce + ciphertext + tag)
+    :param key: AES key (must be 16, 24, or 32 bytes long) -  bytes or hexadecimal string
+    :param plaintext: plaintext to be encrypted - string or bytes
+    :return: ciphertext (nonce + ciphertext + tag) - bytes
     '''
     if isinstance(key, str):
         # Convert hexadecimal string key to bytes
         key = hexstring_to_bytes(key)
+    if isinstance(plaintext, str):
+        # Convert string plaintext to bytes
+        plaintext = plaintext.encode()
     cipher = AES.new(key, AES.MODE_GCM)
     nonce = cipher.nonce
     ciphertext, tag = cipher.encrypt_and_digest(plaintext)
@@ -109,13 +113,16 @@ def aes_gcm_encrypt(key, plaintext):
 def aes_gcm_decrypt(key, ciphertext):
     '''
     Decrypts the ciphertext using AES GCM decryption.
-    :param key: AES key (must be 16, 24, or 32 bytes long)
+    :param key: AES key (must be 16, 24, or 32 bytes long) - bytes or hexadecimal string
     :param ciphertext: ciphertext to be decrypted (nonce + ciphertext + tag)
     :return: decrypted plaintext
     '''
     if isinstance(key, str):
-        # Convert hexadecimal string key to bytes
+        # Convert base64 string key to bytes
         key = hexstring_to_bytes(key)
+    if isinstance(ciphertext, str):
+        # Convert base64 string ciphertext to bytes
+        ciphertext = base64.b64decode(ciphertext)
     nonce = ciphertext[:16]
     tag = ciphertext[-16:]
     ciphertext = ciphertext[16:-16]
