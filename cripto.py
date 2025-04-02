@@ -1,5 +1,5 @@
 '''
-Functions for AES256-CBC encryption/decryption and Argon2 hashing.
+Functions for AES256-CBC and AES256-GCM encryption/decryption and Argon2 hashing.
 This module provides functions to generate an AES key, encrypt and decrypt messages,
 and hash and verify passwords using Argon2.
 It uses the PyCryptodome library for AES encryption and Argon2 for password hashing.

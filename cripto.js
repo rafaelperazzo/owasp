@@ -1,6 +1,6 @@
 /**
  * 
- * Functions for AES256-CBC encryption/decryption and Argon2 hashing.
+ * Functions for AES256-CBC and AES256-GCM encryption/decryption and Argon2 hashing.
  * This module provides functions to generate an AES key, encrypt and decrypt messages,
  * and hash and verify passwords using Argon2.
  * It uses the PyCryptodome library for AES encryption and Argon2 for password hashing.
@@ -94,9 +94,9 @@ console.log('key', key.toString('hex'));
 
 var text = 'hello world';
 key = Uint8Array.from(Buffer.from("09d4d25caa46a1e355c68470231b079c6e92ade95aa6e560b11dc5c18fbe6eba", 'hex'));
-var encrypted = encrypt(text, key);
+var encrypted = encrypt_gcm(text, key);
 console.log('encrypted', encrypted);
-var decrypted = decrypt(encrypted, key);
+var decrypted = decrypt_gcm(encrypted, key);
 console.log('decrypted', decrypted);
 console.log('hmac',hmac(key, text));
 

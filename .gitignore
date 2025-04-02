@@ -1,3 +1,4 @@
+*.gpg
 __pycache__/
 wordlist.txt
 *.token
