@@ -1,5 +1,5 @@
 '''
-Functions for AES256-CBC and AES256-GCM encryption/decryption and Argon2 hashing.
+Functions for AES256-GCM encryption/decryption (pycriptodome and gpg) and Argon2 hashing.
 This module provides functions to generate an AES key, encrypt and decrypt messages,
 and hash and verify passwords using Argon2.
 It uses the PyCryptodome library for AES encryption and Argon2 for password hashing.
@@ -14,13 +14,13 @@ Version: 1.1
 '''
 # -*- coding: utf-8 -*-
 from pathlib import Path
+import base64
 import argon2
 from argon2 import PasswordHasher
 from Crypto.Cipher import AES
 from Crypto.Hash import HMAC, SHA3_256
 from Crypto.Random import get_random_bytes
-from Crypto.Util.Padding import pad, unpad
-import base64
+import gnupg
 
 def hexstring_to_bytes(hex_string):
     '''
@@ -63,34 +63,29 @@ def generate_key():
             aes_key = key_file.read()
     return aes_key
 
-def encrypt(key, plaintext):
+def gpg_encrypt(key, plaintext):
     '''
-    Encrypts the plaintext using AES CBC encryption with a random IV.
-    :param key: AES key (must be 16, 24, or 32 bytes long)
-    :param plaintext: plaintext to be encrypted
-    :return: ciphertext (IV + ciphertext)
+    Encrypts the plaintext using GPG Symmetric encryption.
+    :param key: GPG passphrase - string
+    :param plaintext: plaintext to be encrypted - string
+    :return: ciphertext - string
     '''
-    if isinstance(key, str):
-        # Convert hexadecimal string key to bytes
-        key = hexstring_to_bytes(key)
-    cipher = AES.new(key, AES.MODE_CBC)
-    ciphertext = cipher.encrypt(pad(plaintext, AES.block_size))
-    return cipher.iv + ciphertext
+    gpg = gnupg.GPG()
+    # Encrypt the plaintext
+    encrypted_data = gpg.encrypt(plaintext,passphrase=key,symmetric='AES256',recipients=None)
+    return str(encrypted_data)
 
-def decrypt(key, ciphertext):
+def gpg_decrypt(key, ciphertext):
     '''
-    Decrypts the ciphertext using AES-CBC decryption.
-    :param key: AES key (must be 16, 24, or 32 bytes long)
-    :param ciphertext: ciphertext to be decrypted (IV + ciphertext)
-    :return: decrypted plaintext
+    Decrypts the ciphertext using GPG Symmetric decryption.
+    :param key: GPG passphrase - string
+    :param ciphertext: ciphertext to be decrypted - string
+    :return: decrypted plaintext - string
     '''
-    if isinstance(key, str):
-        # Convert hexadecimal string key to bytes
-        key = hexstring_to_bytes(key)
-    iv = ciphertext[:AES.block_size]
-    cipher = AES.new(key, AES.MODE_CBC, iv)
-    plaintext = unpad(cipher.decrypt(ciphertext[AES.block_size:]), AES.block_size)
-    return plaintext
+    gpg = gnupg.GPG()
+    # Decrypt the ciphertext
+    decrypted_data = gpg.decrypt(ciphertext,passphrase=key)
+    return str(decrypted_data)
 
 def aes_gcm_encrypt(key, plaintext):
     '''
@@ -224,13 +219,13 @@ def main():
     print(f"AES Key: {aes_key.hex()}")
     
     # Encrypt a message
-    MESSAGE = b"Hello, World!"
-    encrypted_text = encrypt(aes_key, MESSAGE)
-    print(f"Ciphertext: {encrypted_text.hex()}")
+    MESSAGE = "Hello, World!"
+    encrypted_text = aes_gcm_encrypt(aes_key, MESSAGE)
+    print(f"Ciphertext: {encrypted_text}")
     
     # Decrypt the message
-    decrypted_text = decrypt(aes_key, encrypted_text)
-    print(f"Plaintext: {decrypted_text.decode()}")
+    decrypted_text = aes_gcm_decrypt(aes_key, encrypted_text)
+    print(f"Plaintext: {decrypted_text}")
     
     # Hash a password with Argon2
     PASSWORD = "mysecretpassword123456789012345"
@@ -242,6 +237,11 @@ def main():
     # Verify a different password
     is_valid = verify_hash(HASH_ARGON, aes_key, "wrongpassword")
     print(f"Password is valid: {is_valid}")
+    
+    enc = gpg_encrypt("12345", "Hello, World!")
+    print(enc)
+    dec = gpg_decrypt("12345", enc)
+    print(dec)
     
 if __name__ == "__main__":
     main()

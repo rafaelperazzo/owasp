@@ -22,30 +22,6 @@ function hexString2bytes(hexString) {
     return convertido;
 }
 
-function encrypt(text, key) {
-    if (typeof key === 'string') {
-        key = hexString2bytes(key);
-    }
-    var iv = crypto.randomBytes(16);
-    var cipher = crypto.createCipheriv('aes-256-cbc', Buffer.from(key), iv);
-    var encrypted = cipher.update(text, 'utf8', 'hex');
-    encrypted += cipher.final('hex');
-    encrypted = iv.toString('hex') + ':' + encrypted;
-    return encrypted;
-}
-
-function decrypt(text, key) {
-    if (typeof key === 'string') {
-        key = hexString2bytes(key);
-    }
-    var iv = text.split(':')[0];
-    text = text.split(':')[1];
-    var decipher = crypto.createDecipheriv('aes-256-cbc', Buffer.from(key), Buffer.from(iv, 'hex'));
-    var decrypted = decipher.update(text, 'hex', 'utf8');
-    decrypted += decipher.final('utf8');
-    return decrypted;
-}
-
 function encrypt_gcm(text, key) {
     if (typeof key === 'string') {
         key = hexString2bytes(key);
