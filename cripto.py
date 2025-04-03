@@ -167,9 +167,9 @@ def verify_hmac(key, message, signature):
 def hash_argon2id(key, password):
     '''
     Applies Argon2 hashing to the password using a HMAC.
-    :param key: key for the HMAC
-    :param password: password to be hashed
-    :return: Argon2 hash
+    :param key: key for the HMAC - bytes or hexadecimal string
+    :param password: password to be hashed - string
+    :return: Argon2 hash - string
     '''
     if isinstance(key, str):
         # Convert hexadecimal string key to bytes
@@ -188,9 +188,9 @@ def hash_argon2id(key, password):
 def verify_hash(hash_argon, key, password):
     '''
     Verifies if the Argon2 hash matches the password.
-    :param hash_argon: stored Argon2 hash
-    :param key: key for the HMAC
-    :param password: password to be verified
+    :param hash_argon: stored Argon2 hash - string
+    :param key: key for the HMAC - bytes or hexadecimal string
+    :param password: password to be verified - string
     :return: True if the password is correct, False otherwise
     '''
     if isinstance(key, str):
