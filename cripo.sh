@@ -14,6 +14,4 @@ yourfilenames=`ls *.pdf`
 for eachfile in $yourfilenames
 do
    gpg -o $eachfile.gpg --symmetric --cipher-algo AES256 --passphrase $GPG_AES_KEY --batch --yes $eachfile
-   #dec=${eachfile::-4}
-   #echo $dec
 done
