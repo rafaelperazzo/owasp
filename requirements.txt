@@ -12,3 +12,4 @@ pycryptodome==3.22.0
 Pygments==2.19.1
 pytest==8.3.5
 python-gnupg==0.5.4
+setuptools==78.1.0

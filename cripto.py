@@ -60,6 +60,8 @@ from Crypto.Hash import HMAC, SHA3_256
 from Crypto.Random import get_random_bytes
 import gnupg
 
+__version__ = '0.0.1'
+
 def hexstring_to_bytes(hex_string):
     '''
     Converts a hexadecimal string to bytes.
