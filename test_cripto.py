@@ -1,5 +1,9 @@
-from cripto import aes_gcm_encrypt,aes_gcm_decrypt, hash_argon2id,verify_hash, gpg_encrypt, gpg_decrypt
+'''
+Automated tests for the cripto module.
+'''
 from Crypto.Random import get_random_bytes
+from cripto import (aes_gcm_decrypt, aes_gcm_encrypt, gpg_decrypt, gpg_encrypt,
+                    hash_argon2id, verify_hash,hmac, verify_hmac)
 
 def test_aes_gcm_encrypt_decrypt():
     '''
@@ -61,3 +65,21 @@ def test_gpg_encrypt_decrypt():
     decrypted_plaintext = gpg_decrypt(key, ciphertext)
     # Check that the decrypted plaintext is equal to the original plaintext
     assert decrypted_plaintext == plaintext
+
+def test_hmac():
+    '''
+    Test the HMAC functions.
+    1. Create a known key and message.
+    2. Generate an HMAC for the message.
+    3. Verify the HMAC with the correct message.
+    4. Verify the HMAC with an incorrect message.
+    '''
+    # Test with a known key and message
+    key = get_random_bytes(32) # 32 bytes key for HMAC
+    message = 'This is a test.'
+    hmac_value = hmac(key, message)
+    # Verify the HMAC with the correct message
+    assert verify_hmac(key, message,hmac_value) is True
+    # Verify the HMAC with an incorrect message
+    assert verify_hmac(key, 'wrongmessage',hmac_value) is False
+    

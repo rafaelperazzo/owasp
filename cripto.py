@@ -11,6 +11,44 @@ production without proper security measures.
 Author: RAFAEL PERAZZO B MOTA
 Date: 2025-03-30
 Version: 1.1
+
+
+Example usage:
+# Generate or load the AES key
+aes_key = generate_key()
+print(f"AES Key: {aes_key.hex()}")
+
+# Encrypt a message
+MESSAGE = "Hello, World!"
+encrypted_text = aes_gcm_encrypt(aes_key, MESSAGE)
+print(f"Ciphertext: {encrypted_text}")
+
+# Decrypt the message
+decrypted_text = aes_gcm_decrypt(aes_key, encrypted_text)
+print(f"Plaintext: {decrypted_text}")
+
+# Hash a password with Argon2
+PASSWORD = "mysecretpassword123456789012345"
+HASH_ARGON = hash_argon2id(aes_key, PASSWORD)
+print(f"Argon2 Hash: {HASH_ARGON}")
+# Verify the password
+is_valid = verify_hash(HASH_ARGON, aes_key, PASSWORD)
+print(f"Password is valid: {is_valid}")
+# Verify a different password
+is_valid = verify_hash(HASH_ARGON, aes_key, "wrongpassword")
+print(f"Password is valid: {is_valid}")
+
+enc = gpg_encrypt("12345", "Hello, World!")
+print(enc)
+dec = gpg_decrypt("12345", enc)
+print(dec)
+
+hmac_txt = hmac(aes_key, MESSAGE)
+print(hmac_txt)
+# Verify the HMAC
+is_valid = verify_hmac(aes_key, MESSAGE, hmac_txt)
+print(f"HMAC is valid: {is_valid}")
+
 '''
 # -*- coding: utf-8 -*-
 from pathlib import Path
@@ -128,9 +166,9 @@ def aes_gcm_decrypt(key, ciphertext):
 def hmac(key, message):
     '''
     Applies HMAC to the message using SHA3-256.
-    :param key: key for the HMAC
-    :param message: message to be hashed
-    :return: HMAC signature
+    :param key: key for the HMAC - bytes or hexadecimal string
+    :param message: message to be hashed - string
+    :return: HMAC signature - string
     '''
     if isinstance(key, str):
         # Convert hexadecimal string key to bytes
@@ -145,9 +183,9 @@ def hmac(key, message):
 def verify_hmac(key, message, signature):
     '''
     Verifies if the HMAC signature matches the message.
-    :param key: key for the HMAC
-    :param message: message to be verified
-    :param signature: HMAC signature to be verified
+    :param key: key for the HMAC - bytes or hexadecimal string
+    :param message: message to be verified - string
+    :param signature: HMAC signature to be verified - string
     :return: True if the signature is valid, False otherwise
     '''
     if isinstance(key, str):
@@ -209,39 +247,3 @@ def verify_hash(hash_argon, key, password):
         return True
     except argon2.exceptions.VerifyMismatchError:
         return False
-
-def main():
-    '''
-    Função principal para testes das funções de criptografia e hashing.
-    '''
-    # Generate or load the AES key
-    aes_key = generate_key()
-    print(f"AES Key: {aes_key.hex()}")
-    
-    # Encrypt a message
-    MESSAGE = "Hello, World!"
-    encrypted_text = aes_gcm_encrypt(aes_key, MESSAGE)
-    print(f"Ciphertext: {encrypted_text}")
-    
-    # Decrypt the message
-    decrypted_text = aes_gcm_decrypt(aes_key, encrypted_text)
-    print(f"Plaintext: {decrypted_text}")
-    
-    # Hash a password with Argon2
-    PASSWORD = "mysecretpassword123456789012345"
-    HASH_ARGON = hash_argon2id(aes_key, PASSWORD)
-    print(f"Argon2 Hash: {HASH_ARGON}")
-    # Verify the password
-    is_valid = verify_hash(HASH_ARGON, aes_key, PASSWORD)
-    print(f"Password is valid: {is_valid}")
-    # Verify a different password
-    is_valid = verify_hash(HASH_ARGON, aes_key, "wrongpassword")
-    print(f"Password is valid: {is_valid}")
-    
-    enc = gpg_encrypt("12345", "Hello, World!")
-    print(enc)
-    dec = gpg_decrypt("12345", enc)
-    print(dec)
-    
-if __name__ == "__main__":
-    main()
