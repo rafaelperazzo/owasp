@@ -8,5 +8,5 @@ setuptools.setup(
      python_requires=">=3.6",   
      packages=["cripto"],
      author="Rafael Perazzo",
-     install_requires=['argon2-cffi','pycryptodome','gnupg',],
+     install_requires=['cffi','argon2-cffi','pycryptodome','python-gnupg','argon2-cffi-bindings'],
 )
