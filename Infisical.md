@@ -35,7 +35,7 @@ infisical init
 ## Baixar os segredos necessários para seu projeto
 
 ```console
-infisical secreta get NOME_DO_SEGREDO --plain
+infisical secrets get NOME_DO_SEGREDO --plain
 ```
 
 ## Exportar para um arquivo .env

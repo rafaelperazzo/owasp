@@ -1,47 +1,17 @@
 /**
  * 
- * Functions for AES256-GCM encryption/decryption and Argon2 hashing.
+ * @description Functions for AES256-GCM encryption/decryption and Argon2 hashing.<br>
  * This module provides functions to generate an AES key, encrypt and decrypt messages,
- * and hash and verify passwords using Argon2.
- * It uses the PyCryptodome library for AES encryption and Argon2 for password hashing.
- * It is important to note that the AES key should be kept secret and secure.
- * The Argon2 hash should also be stored securely, as it is used to verify passwords.
+ * and hash and verify passwords using Argon2.<br>
+ * It uses the PyCryptodome library for AES encryption and Argon2 for password hashing.<br>
+ * It is important to note that the AES key should be kept secret and secure.<br>
+ * The Argon2 hash should also be stored securely, as it is used to verify passwords.<br>
  * This module is intended for educational purposes and should not be used in 
- * production without proper security measures.
+ * production without proper security measures.<br>
 
- * Author: RAFAEL PERAZZO B MOTA
- * Date: 2025-03-30
- * Version: 1.0
- * 
- * Example usage:
- * 
-var key = crypto.randomBytes(32);
-console.log('key', key.toString('hex'));
-
-var text = 'hello world';
-key = Uint8Array.from(Buffer.from("09d4d25caa46a1e355c68470231b079c6e92ade95aa6e560b11dc5c18fbe6eba", 'hex'));
-var encrypted = encrypt_gcm(text, key);
-console.log('encrypted', encrypted);
-var decrypted = decrypt_gcm(encrypted, key);
-console.log('decrypted', decrypted);
-console.log('hmac',hmac(key, text));
-
-hashPassword('hello world').then((hash) => {
-    console.log('hash', hash);
-    verifyPassword('hello world', hash).then((result) => {
-        console.log('verify', result);
-    }).catch((err) => {
-        console.log('error', err);
-    });
-    verifyPassword('wrongpassword', hash).then((result) => {
-        console.log('verify', result);
-    }).catch((err) => {
-        console.log('error', err);
-    });
-}
-).catch((err) => {
-    console.log('error', err);
-});
+ * @author RAFAEL PERAZZO B MOTA
+ * @date Date: 2025-03-30
+ * @version 1.0 
  * 
  */
 var crypto = require('crypto');

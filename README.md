@@ -3,7 +3,7 @@
 ## Criptografia
 
     - AES256-GCM em Python e Javascript
-    - Argon2 em Python e Javascript
+    - Argon2 em Python e Javascript com pepper
     - AES256-GCM em Python com GPG 
 
 ## Gerenciamento de segredos
