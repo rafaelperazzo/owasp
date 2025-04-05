@@ -13,5 +13,4 @@ setup(
      author="Rafael Perazzo",
      install_requires=["argon2-cffi", "pycryptodome", "python-gnupg"],
      description="Cryptography tools for Python",
-     requirements=requirements,
 )
