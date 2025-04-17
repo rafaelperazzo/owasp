@@ -13,5 +13,7 @@ fi
 yourfilenames=`ls *.pdf`
 for eachfile in $yourfilenames
 do
+   echo "Encrypting $eachfile"
+   # Encrypt the file using GPG with AES256 encryption
    gpg -o $eachfile.gpg --symmetric --armor --cipher-algo AES256 --passphrase $GPG_AES_KEY --batch --yes $eachfile
 done
